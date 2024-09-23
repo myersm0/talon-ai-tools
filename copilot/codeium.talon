@@ -12,9 +12,9 @@ pilot yes: user.vscode("editor.action.inlineSuggest.commit")
 pilot nope: user.vscode("editor.action.inlineSuggest.undo")
 
 pilot chat [<user.prose>]:
-    user.vscode("codeium.openChatView")
-    sleep(2)
-    user.paste(user.prose or "")
+	user.vscode("codeium.openChatView")
+	sleep(2)
+	user.paste(user.prose or "")
 
 pilot toggle: user.vscode("codeium.toggleEnabledForCurrentLanguage")
 
@@ -22,9 +22,9 @@ pilot toggle: user.vscode("codeium.toggleEnabledForCurrentLanguage")
 pilot submit: key(ctrl-shift-enter)
 
 pilot make [<user.prose>]:
-    user.vscode("codeium.openCodeiumCommand")
-    sleep(0.7)
-    user.paste(user.prose or "")
+	user.vscode("codeium.openCodeiumCommand")
+	sleep(0.7)
+	user.paste(user.prose or "")
 
 pilot search: user.vscode("codeium.openSearchView")
 pilot explain: user.vscode("codeium.explainCodeBlock")

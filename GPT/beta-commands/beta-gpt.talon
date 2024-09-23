@@ -7,9 +7,9 @@ tag: user.gpt_beta
 
 # Using the context of the text on the clipboard, update the selected text
 {user.model} blend paste:
-    destination_text = edit.selected_text()
-    result = user.gpt_blend(clip.text(), destination_text)
+	destination_text = edit.selected_text()
+	result = user.gpt_blend(clip.text(), destination_text)
 
 # Pass the raw text of a prompt to a destination without actually calling GPT with it
 {user.model} pass <user.modelPrompt> [{user.modelDestination}]:
-    user.gpt_insert_response(modelPrompt, modelDestination or "")
+	user.gpt_insert_response(modelPrompt, modelDestination or "")

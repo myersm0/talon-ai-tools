@@ -14,15 +14,15 @@ app: vscode
 # ## Example
 # `model blend block this to block next`
 model blend <user.cursorless_target> to <user.cursorless_target>:
-    target_text = user.cursorless_get_text_list(cursorless_target_1)
-    destination_text = user.cursorless_get_text(cursorless_target_2)
-    default_destination = user.cursorless_create_destination(cursorless_target_2)
-    result = user.gpt_blend_list(target_text, destination_text)
-    user.cursorless_insert(default_destination, result)
+	target_text = user.cursorless_get_text_list(cursorless_target_1)
+	destination_text = user.cursorless_get_text(cursorless_target_2)
+	default_destination = user.cursorless_create_destination(cursorless_target_2)
+	result = user.gpt_blend_list(target_text, destination_text)
+	user.cursorless_insert(default_destination, result)
 
 model blend paste to <user.cursorless_target>:
-    clipboard_text = clip.text()
-    destination_text = user.cursorless_get_text(cursorless_target)
-    default_destination = user.cursorless_create_destination(cursorless_target)
-    result = user.gpt_blend(clipboard_text, destination_text)
-    user.cursorless_insert(default_destination, result)
+	clipboard_text = clip.text()
+	destination_text = user.cursorless_get_text(cursorless_target)
+	default_destination = user.cursorless_create_destination(cursorless_target)
+	result = user.gpt_blend(clipboard_text, destination_text)
+	user.cursorless_insert(default_destination, result)

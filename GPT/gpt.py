@@ -72,7 +72,7 @@ class UserActions:
         prompt = f"""
         Generate a {shell_name} shell command that will perform the given task.
         Only include the code. Do not include any comments, backticks, or natural language explanations. Do not output the shell name, only the code that is valid {shell_name}.
-        Condense the code into a single line such that it can be ran in the terminal.
+        Condense the code into a single line such that it can be run in the terminal.
         """
 
         result = gpt_query(format_message(prompt), format_message(text_to_process))
@@ -188,7 +188,7 @@ class UserActions:
 
     def gpt_reformat_last(how_to_reformat: str) -> str:
         """Reformat the last model output"""
-        PROMPT = f"""The last phrase was written using voice dictation. It has an error with spelling, grammar, or just general misrecognition due to a lack of context. Please reformat the following text to correct the error with the context that it was {how_to_reformat}."""
+        PROMPT = f"""The last phrase was written using voice dictation. It may have errors with spelling, capitalization, punctuation, etc due to lack of context. Please reformat the following text to correct the errors with the context that it was {how_to_reformat}."""
         last_output = actions.user.get_last_phrase()
         if last_output:
             actions.user.clear_last_phrase()
@@ -308,7 +308,7 @@ class UserActions:
                 pass
 
     def gpt_get_source_text(spoken_text: str) -> GPTMessageItem:
-        """Get the source text that is will have the prompt applied to it"""
+        """Get the source text that will have the prompt applied to it"""
         match spoken_text:
             case "clipboard":
                 return format_clipboard()

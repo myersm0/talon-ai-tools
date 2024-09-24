@@ -10,7 +10,7 @@
 # Example: `model pass thread to browser`
 # Example: `model pass clip to this`
 {user.model} pass ({user.modelSource} | {user.modelDestination} | {user.modelSource} {user.modelDestination})$:
-    user.gpt_pass(modelSource or "", modelDestination or "")
+	user.gpt_pass(modelSource or "", modelDestination or "")
 
 # Clear the context stored in the model
 # Note that if you are in a thread, your thread
@@ -32,5 +32,5 @@
 # If you are in a thread, it will be automatically updated
 # as you say new requests
 ^{user.model} toggle window$:
-    force_open = true
-    user.confirmation_gui_refresh_thread(force_open)
+	force_open = true
+	user.confirmation_gui_refresh_thread(force_open)

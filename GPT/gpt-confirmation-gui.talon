@@ -6,8 +6,8 @@ tag: user.model_window_open
 
 # Confirm and paste the output of the model selected
 ^chain response$:
-    user.confirmation_gui_paste()
-    user.gpt_select_last()
+	user.confirmation_gui_paste()
+	user.gpt_select_last()
 
 ^copy response$: user.confirmation_gui_copy()
 ^pass response to context$: user.confirmation_gui_pass_context()

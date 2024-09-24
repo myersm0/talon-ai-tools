@@ -10,31 +10,31 @@ mod = Module()
 
 @mod.action_class
 class Actions:
-    def image_generate(prompt: str):
-        """Generate an image from the provided text"""
+	def image_generate(prompt: str):
+		"""Generate an image from the provided text"""
 
-        url = "https://api.openai.com/v1/images/generations"
-        TOKEN = get_token()
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {TOKEN}",
-        }
-        data = {
-            "model": "dall-e-3",
-            "prompt": prompt,
-            "n": 1,
-            "size": "1024x1024",
-        }
+		url = "https://api.openai.com/v1/images/generations"
+		TOKEN = get_token()
+		headers = {
+			"Content-Type": "application/json",
+			"Authorization": f"Bearer {TOKEN}",
+		}
+		data = {
+			"model": "dall-e-3",
+			"prompt": prompt,
+			"n": 1,
+			"size": "1024x1024",
+		}
 
-        response = requests.post(url, headers=headers, json=data)
+		response = requests.post(url, headers=headers, json=data)
 
-        match response.status_code:
-            case 200:
-                response_dict = response.json()
-                image_url = response_dict["data"][0]["url"]
-                # TODO choose whether to save the image, save the url, or paste the image into the current window
-                webbrowser.open(image_url)
-            case _:
-                print(response.json())
-                notify("Error generating image")
-                raise Exception("Error generating image")
+		match response.status_code:
+			case 200:
+				response_dict = response.json()
+				image_url = response_dict["data"][0]["url"]
+				# TODO choose whether to save the image, save the url, or paste the image into the current window
+				webbrowser.open(image_url)
+			case _:
+				print(response.json())
+				notify("Error generating image")
+				raise Exception("Error generating image")

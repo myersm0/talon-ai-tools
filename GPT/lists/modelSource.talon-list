@@ -20,3 +20,6 @@ response: gptResponse
 
 # Apply the prompt to the last phrase typed by Talon via a user's dictation
 last: lastTalonDictation
+
+# Apply the prompt to the contents of a file
+file: file

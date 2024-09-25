@@ -6,7 +6,7 @@ list: user.staticPrompt
 
 ## FIXES
 fix grammar formally: Fix any mistakes or irregularities in grammar, spelling, or formatting. Use a professional business tone. The text was created using voice dictation. Thus, there are likely to be issues regarding homophones and other misrecognitions. Do not change the original structure of the text.
-fix grammar: Fix any mistakes or irregularities in grammar, spelling, or formatting. The text was created using voice dictation. Thus, there are likely to be issues regarding homophones and other misrecognitions. Do not change the tone. Do not change the original structure of the text.
+fix grammar: Fix any mistakes or irregularities in punctuation, spelling, or formatting. The text was created using voice dictation. Thus, there might also be issues regarding homophones and other misrecognitions. Do not change the tone. Do not change the original structure of the text.
 fix syntax: Fix any syntax errors in this code selection. Do not change any behavior.
 
 ## FORMATTING
@@ -37,6 +37,7 @@ convert to yam: Convert the following data into a YAML format.
 
 ## CHECKERS
 describe code: Explain what the following code does in natural language at a high level without getting into the specifics of the syntax.
+describe code in detail: Explain what the following code does. Direct your response to a software engineer who will be responsible for thoroughly understanding and/or maintaining this code.
 check grammar: Check the grammar and formatting of the following text. Return a list of all potential errors.
 check spelling: Check the spelling of the following text. Return a list of all potential errors.
 check structure: Skim the structure and layout of the following text. Tell me if the structure and order of my writing are correct. If it is not correct or flows poorly, then tell me what might be wrong with it. If it is all correct, then say it looks good.

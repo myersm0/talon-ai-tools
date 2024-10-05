@@ -169,7 +169,7 @@ def send_request(
 		]
 		+ GPTState.thread
 		+ [current_request],
-		"max_tokens": 2024,
+		"max_tokens": 4096,
 		"temperature": settings.get("user.model_temperature"),
 		"n": 1,
 		"model": settings.get("user.openai_model"),

@@ -1,14 +1,17 @@
 import base64
 import json
 import os
+import time
 from typing import Literal, Optional
 
 import requests
+from requests.auth import HTTPBasicAuth
 from talon import actions, app, clip, settings
 
 from ..lib.pureHelpers import strip_markdown
 from .modelState import GPTState
 from .modelTypes import GPTMessage, GPTMessageItem
+
 
 """"
 All functions in this this file have impure dependencies on either the model or the talon APIs
@@ -45,12 +48,74 @@ def notify(message: str):
     print(message)
 
 
-def get_token() -> str:
-    """Get the OpenAI API key from the environment"""
+# Global variables to store token and its expiration time
+cached_token = None
+token_expires_at = 0
+
+def request_temporary_token(token_url, client_id, client_secret, scope):
+    payload = {
+        'grant_type': 'client_credentials',
+        'scope': scope
+    }
+    timeout_duration = 10  # Timeout in seconds
     try:
-        return os.environ["OPENAI_API_KEY"]
-    except KeyError:
-        message = "GPT Failure: env var OPENAI_API_KEY is not set."
+        start_time = time.time()
+        response = requests.post(
+            token_url,
+            auth=HTTPBasicAuth(client_id, client_secret), 
+            data=payload, 
+            timeout=timeout_duration
+        )
+        end_time = time.time()
+        response.raise_for_status()
+        print(f"Access token request duration: {end_time - start_time} seconds")
+        return response.json()["access_token"], time.time() + 3600  # Token valid for 1 hour
+    except requests.RequestException as e:
+        print(f"Failed to get access token: {e}")
+        return None, 0
+    except ValueError:
+        print("Failed to parse JSON response")
+        return None, 0
+
+
+def get_token() -> str:
+    global cached_token, token_expires_at
+
+    # Try using the OPENAI_API_KEY environment variable first
+    api_key = os.getenv('OPENAI_API_KEY')
+    if api_key:
+        print("using the api key")
+        return api_key
+
+    # If we already have a token and it's still valid, use it
+    if cached_token and time.time() < token_expires_at:
+        print("using a cached token")
+        return cached_token
+
+    # Otherwise, try to request a new token via POST call
+    token_url = os.getenv('TOKEN_URL')
+    client_id = os.getenv('CLIENT_ID')
+    client_secret = os.getenv('CLIENT_SECRET')
+    scope = os.getenv('SCOPE')
+
+    if all([token_url, client_id, client_secret, scope]):
+        token, expires_at = request_temporary_token(
+            token_url, client_id, client_secret, scope
+        )
+        if token:
+            cached_token = token
+            token_expires_at = expires_at
+            print("using a newly generated token")
+            return token
+        else:
+            message = "GPT Failure: unable to fetch the token."
+            notify(message)
+            raise Exception(message)
+    else:
+        message = """
+            GPT Failure: env var OPENAI_API_KEY is not set, nor are vars the needed 
+				for token-based access (TOKEN_URL, CLIENT_ID, CLIENT_SECRET, SCOPE)
+        """
         notify(message)
         raise Exception(message)
 
@@ -176,11 +241,7 @@ def send_request(
 
     url: str = settings.get("user.model_endpoint")  # type: ignore
     headers = {"Content-Type": "application/json"}
-    # If the model endpoint is Azure, we need to use a different header
-    if "azure.com" in url:
-        headers["api-key"] = TOKEN
-    else:
-        headers["Authorization"] = f"Bearer {TOKEN}"
+    headers["Authorization"] = f"Bearer {TOKEN}"
 
     raw_response = requests.post(url, headers=headers, data=json.dumps(data))
 
@@ -192,6 +253,10 @@ def send_request(
             response = format_message(formatted_resp)
         case _:
             notify("GPT Failure: Check the Talon Log")
+            print(f"URL: {url}")
+            print(f"Headers: {headers}")
+            print(f"Payload: {json.dumps(data, indent=2)}")
+
             raise Exception(raw_response.json())
 
     if GPTState.thread_enabled:

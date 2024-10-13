@@ -48,9 +48,67 @@ def notify(message: str):
     print(message)
 
 
-# Global variables to store token and its expiration time
+def get_token() -> str:
+    openai_authentication = settings.get("user.openai_authentication")
+    if openai_authentication == "API key":
+        return get_api_key()
+    elif openai_authentication == "OAuth credentials":
+        return get_oauth_token()
+    else:
+        message = f"GPT Failure: unsupported value {openai_authentication} in `openai_authentication` setting" 
+        notify(message)
+        raise Exception(message)
+
+
+def get_api_key() -> str:
+    try:
+        print("Using an OpenAI API key")
+        return os.environ["OPENAI_API_KEY"]
+    except KeyError:
+        message = "GPT Failure: env var OPENAI_API_KEY is not set."
+        notify(message)
+        raise Exception(message)
+
+
+# Global variables to store temporary access token and its expiration time
 cached_token = None
 token_expires_at = 0
+
+def get_oauth_token() -> str:
+    global cached_token, token_expires_at
+
+    # If we already have a token and it's still valid, use it
+    if cached_token and time.time() < token_expires_at:
+        print("Using a cached OAuth 2.0 token")
+        return cached_token
+
+    # Otherwise, try to request a new token via POST call
+    token_url = os.getenv('TOKEN_URL')
+    client_id = os.getenv('CLIENT_ID')
+    client_secret = os.getenv('CLIENT_SECRET')
+    scope = os.getenv('SCOPE')
+
+    if all([token_url, client_id, client_secret, scope]):
+        token, expires_at = request_temporary_token(
+            token_url, client_id, client_secret, scope
+        )
+        if token:
+            cached_token = token
+            token_expires_at = expires_at
+            print("Using a newly generated OAuth 2.0 token")
+            return token
+        else:
+            message = "GPT Failure: unable to fetch the token."
+            notify(message)
+            raise Exception(message)
+    else:
+        message = """
+            GPT Failure: env vars are not set for OAuth 2.0 token-based access 
+            (TOKEN_URL, CLIENT_ID, CLIENT_SECRET, SCOPE)
+        """
+        notify(message)
+        raise Exception(message)
+
 
 def request_temporary_token(token_url, client_id, client_secret, scope):
     payload = {
@@ -76,48 +134,6 @@ def request_temporary_token(token_url, client_id, client_secret, scope):
     except ValueError:
         print("Failed to parse JSON response")
         return None, 0
-
-
-def get_token() -> str:
-    global cached_token, token_expires_at
-
-    # Try using the OPENAI_API_KEY environment variable first
-    api_key = os.getenv('OPENAI_API_KEY')
-    if api_key:
-        print("using the api key")
-        return api_key
-
-    # If we already have a token and it's still valid, use it
-    if cached_token and time.time() < token_expires_at:
-        print("using a cached token")
-        return cached_token
-
-    # Otherwise, try to request a new token via POST call
-    token_url = os.getenv('TOKEN_URL')
-    client_id = os.getenv('CLIENT_ID')
-    client_secret = os.getenv('CLIENT_SECRET')
-    scope = os.getenv('SCOPE')
-
-    if all([token_url, client_id, client_secret, scope]):
-        token, expires_at = request_temporary_token(
-            token_url, client_id, client_secret, scope
-        )
-        if token:
-            cached_token = token
-            token_expires_at = expires_at
-            print("using a newly generated token")
-            return token
-        else:
-            message = "GPT Failure: unable to fetch the token."
-            notify(message)
-            raise Exception(message)
-    else:
-        message = """
-            GPT Failure: env var OPENAI_API_KEY is not set, nor are vars the needed 
-				for token-based access (TOKEN_URL, CLIENT_ID, CLIENT_SECRET, SCOPE)
-        """
-        notify(message)
-        raise Exception(message)
 
 
 def format_messages(

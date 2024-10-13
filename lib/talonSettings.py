@@ -70,3 +70,10 @@ mod.setting(
     default="bash",
     desc="The default shell for outputting model shell commands",
 )
+
+mod.setting(
+    "openai_authentication",
+    type=Literal["API key", "OAuth credentials"],
+    default="API key",
+    desc="Set this to 'OAuth credentials' to use temporary access tokens instead of a fixed OpenAI API key",
+)

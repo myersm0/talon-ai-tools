@@ -7,6 +7,10 @@ settings():
     # Works with any API with the same schema as OpenAI's (i.e. Azure, llamafiles, etc.)
     # user.model_endpoint = "https://api.openai.com/v1/chat/completions"
 
+    # set this to "OAuth credentials" to use OAuth2.0-style authentication instead of 
+	 # a fixed API key (requires env vars CLIENT_ID, CLIENT_SECRET, TOKEN_URL, SCOPE)
+    # user.openai_authentication = "API key"
+
     # user.model_system_prompt = "You are an assistant helping an office worker to be more productive."
 
     # Change to 'gpt-4' or the model of your choice

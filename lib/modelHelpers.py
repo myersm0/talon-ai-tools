@@ -87,27 +87,26 @@ def get_oauth_token() -> str:
     client_id = os.getenv("CLIENT_ID")
     client_secret = os.getenv("CLIENT_SECRET")
     scope = os.getenv("SCOPE")
-
-    if all([token_url, client_id, client_secret, scope]):
-        token, expires_at = request_temporary_token(
-            token_url, client_id, client_secret, scope
-        )
-        if token:
-            cached_token = token
-            token_expires_at = expires_at
-            print("Using a newly generated OAuth 2.0 token")
-            return token
-        else:
-            message = "GPT Failure: unable to fetch the token."
-            notify(message)
-            raise Exception(message)
-    else:
+    if not all([token_url, client_id, client_secret, scope]):
         message = """
             GPT Failure: env vars are not set for OAuth 2.0 token-based access 
             (TOKEN_URL, CLIENT_ID, CLIENT_SECRET, SCOPE)
         """
         notify(message)
         raise Exception(message)
+        
+    token, expires_at = request_temporary_token(
+        token_url, client_id, client_secret, scope
+    )
+    if not token:
+        message = "GPT Failure: unable to fetch the token."
+        notify(message)
+        raise Exception(message)
+
+    cached_token = token
+    token_expires_at = expires_at
+    print("Using a newly generated OAuth 2.0 token")
+    return token
 
 
 def request_temporary_token(token_url, client_id, client_secret, scope):

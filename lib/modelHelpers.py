@@ -83,10 +83,10 @@ def get_oauth_token() -> str:
         return cached_token
 
     # Otherwise, try to request a new token via POST call
-    token_url = os.getenv('TOKEN_URL')
-    client_id = os.getenv('CLIENT_ID')
-    client_secret = os.getenv('CLIENT_SECRET')
-    scope = os.getenv('SCOPE')
+    token_url = os.getenv("TOKEN_URL")
+    client_id = os.getenv("CLIENT_ID")
+    client_secret = os.getenv("CLIENT_SECRET")
+    scope = os.getenv("SCOPE")
 
     if all([token_url, client_id, client_secret, scope]):
         token, expires_at = request_temporary_token(
@@ -112,8 +112,8 @@ def get_oauth_token() -> str:
 
 def request_temporary_token(token_url, client_id, client_secret, scope):
     payload = {
-        'grant_type': 'client_credentials',
-        'scope': scope
+        "grant_type": "client_credentials",
+        "scope": scope
     }
     timeout_duration = 10  # Timeout in seconds
     try:
